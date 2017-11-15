@@ -10,12 +10,16 @@ def removeArticlesWithoutTopic():
     i = 0
     for obj in initialData:
         if "topics" in obj and "body" in obj:
-            cleanData.append(obj)
+            cleanData.append(lowercaseBody(obj))
 
+def lowercaseBody(object):
+    object["body"] = object["body"].lower()
+    return object
 
 if __name__ == '__main__':
     start_time = time.time()
     removeArticlesWithoutTopic()
     pprint(len(cleanData))
+    pprint(cleanData[0])
     print("Execution time: %s seconds." % (time.time() - start_time))
 
