@@ -65,14 +65,20 @@ def classify(train, test, trainSetEarnOrNot, feature_names):
 if __name__ == '__main__':
     start_time = time.time()
     removeArticlesWithoutTopic()
-    X, feature_names = bagTheWords()
-    X2, feature_names2 = hashTheWords()
-    train, test, trainSetEarnOrNot = prepareSets(X, feature_names, True)
-    train2, test2, trainSetEarnOrNot2 = prepareSets(X2, feature_names2, False)
+    initial_preparing_time = time.time() - start_time
     print("Bag of Words method: ")
+    X, feature_names = bagTheWords()
+    train, test, trainSetEarnOrNot = prepareSets(X, feature_names, True)
     classify(train, test, trainSetEarnOrNot, feature_names)
+    bag_of_words_method_time = time.time() - initial_preparing_time
     print()
     print("Feature Hashing method: ")
+    X2, feature_names2 = hashTheWords()
+    train2, test2, trainSetEarnOrNot2 = prepareSets(X2, feature_names2, False)
     classify(train2, test2, trainSetEarnOrNot2, feature_names2)
+    feature_hashing_method_time = time.time() - bag_of_words_method_time
     print("Execution time: %s seconds." % (time.time() - start_time))
+    print("Bag of words method execution time: %s seconds." % (bag_of_words_method_time))
+    print("Feature hashing method execution time: %s seconds." % (feature_hashing_method_time))
+
 
