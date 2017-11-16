@@ -27,9 +27,28 @@ def bagTheWords():
     X = vectorizer.fit_transform(justBodies)
     return X, vectorizer.get_feature_names()
 
-def prepareSets(X, feature_names):
+def hashTheWords():
+    global justBodies
+    numberOfBuckets = 1000
+    X = []
+    feature_names = set()
+    for body in justBodies:
+        words = body.split()
+        hashes = [0] * numberOfBuckets
+        for word in words:
+            hashedValue = hash(word) % numberOfBuckets
+            hashes[hashedValue] += 1
+            feature_names.add(hashedValue)
+        X.append(hashes)
+    return X, list(feature_names)
+
+
+def prepareSets(X, feature_names, isBagOfWords):
     global justBodies, earnOrNot
-    df = pd.DataFrame(X.toarray(), columns=feature_names)
+    if isBagOfWords:
+        df = pd.DataFrame(X.toarray(), columns=feature_names)
+    else:
+        df = pd.DataFrame(X, columns=feature_names)
     df['ztopic'] = earnOrNot
     df['zis_train'] = np.random.uniform(0, 1, len(df)) <= .8
     train, test = df[df['zis_train']==True], df[df['zis_train']==False]
@@ -47,7 +66,13 @@ if __name__ == '__main__':
     start_time = time.time()
     removeArticlesWithoutTopic()
     X, feature_names = bagTheWords()
-    train, test, trainSetEarnOrNot = prepareSets(X, feature_names)
+    X2, feature_names2 = hashTheWords()
+    train, test, trainSetEarnOrNot = prepareSets(X, feature_names, True)
+    train2, test2, trainSetEarnOrNot2 = prepareSets(X2, feature_names2, False)
+    print("Bag of Words method: ")
     classify(train, test, trainSetEarnOrNot, feature_names)
+    print()
+    print("Feature Hashing method: ")
+    classify(train2, test2, trainSetEarnOrNot2, feature_names2)
     print("Execution time: %s seconds." % (time.time() - start_time))
 
